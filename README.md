@@ -21,10 +21,10 @@ To run the web site, you need
 Please edit `app.py` and `youtube.py` to input your KKBOX and Youtube
 API key. Then please install all of the dependencies:
 
-  pip install -r requirements.txt
+    pip install -r requirements.txt
 
 Now, you can run the site by the following command
 
-  python app.py
+    python app.py
 
 That's all!
