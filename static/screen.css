@@ -1,0 +1,64 @@
+body {
+	font-size: 12pt;
+	font-family: "Helvetica", sans-serif;
+	margin: 0;
+	padding: 0;
+	line-height: 1.5em;
+}
+
+a, a:visited {
+	color: darkred;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+#main {
+	width: 800px;
+	margin: 10px auto;
+}
+
+#header {
+	margin: 0;
+	background-color: gray;
+	padding: 20px 0;
+}
+
+#header a {
+	display: block;
+	width: 800px;
+	margin: 0 auto;
+	text-decoration: none;
+	color: white;
+}
+
+#menu {
+    width: 100px;
+    float: right;
+}
+
+#videos {
+    width: 650px;
+    float: left;
+}
+
+table {
+	/*width: 100%;*/
+	border: 1px solid #CCC;
+}
+
+tr {
+}
+
+th {
+	color: white;
+	background-color: black;
+}
+
+td {
+	border-top: 1px solid #CCC;
+	padding: 2px;
+	min-width: 100px;
+}

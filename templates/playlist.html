@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{app.name}}{%if playlist.get('title', '') %} » {{ playlist.get('title', '') }} {% endif %}</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta property="og:title" content="{{app.name}}{%if playlist.get('title', '') %} » {{ playlist.get('title', '') }} {% endif %}" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:description" content="playlist.get('description', '')" />
+	<style type="text/css">
+      body { line-height: 1.6em; }
+      #title { font-size: 250%; font-weight:bold; }
+      .header { font-size: 180%; }
+      .btn { font-size: 200%; }
+      #player {width: 100%; }
+	</style>
+  </head>
+  <body>
+	<div class="container">
+	  <div class="page-header">
+		<h1>
+		  <a href="/" title="{{app.name}}">{{app.name}}</a>
+		</h1>
+		<p>{{app.description}}</p>
+	  </div>
+	  <div class="row">
+		<div id="videos" class="col-md-8">
+		  {%if playlist.get('images', None) %}
+
+		  <h2>{{ playlist.get('title', '') }}</h2>
+		  <p class="lead">更新時間：{{ playlist.get('updated_at', None) }}</p>
+
+		  <div style="padding:0; overflow: hidden;">
+			<div style="vertical-align:middle;">
+			  <img src="{{ playlist.get('images', None)[0]['url'] }}"
+				   class="img-responsive" alt="Playlist Cover"
+				   style="width: 100%; margin:0;">
+			</div>
+		  </div>
+
+  		  <h3>全部播放</h3>
+		  <div id="player"></div>
+		  <script src="//www.youtube.com/iframe_api"></script>
+		  <script>
+		    /**
+		    * Put your video IDs in this array
+		    */
+		    var videoIDs = [
+			{% for track in playlist.get('tracks', None) %}
+			{% if track.get('youtube', None) != None %}
+			'{{track['youtube']['id']['videoId']}}',
+			{% endif %}
+			{% endfor %}
+		    ];
+
+		    var player, currentVideoId = 0;
+
+		    function onYouTubeIframeAPIReady() {
+		        player = new YT.Player('player', {
+		            height: '350',
+		            width: '425',
+		            events: {
+		                'onReady': onPlayerReady,
+		                'onStateChange': onPlayerStateChange
+		            }
+		        });
+		    }
+		    function onPlayerReady(event) {
+		        event.target.loadVideoById(videoIDs[currentVideoId]);
+		    }
+		    function onPlayerStateChange(event) {
+		        if (event.data == YT.PlayerState.ENDED) {
+		            currentVideoId++;
+		            if (currentVideoId < videoIDs.length) {
+		                player.loadVideoById(videoIDs[currentVideoId]);
+		            }
+		        }
+		    }
+		  </script>
+		  <p>請注意：全部播放功能目前只能在電腦上使用，無法在手機上連續播放。我們從 Youtube 找到的歌曲未必正確。</p>
+  		  <br clear="all" />
+
+		  {% if playlist.get('owner', None) != None and playlist['owner']['name'] != 'KKBOX' %}
+		  <a href="{{ playlist['owner']['url'] }}">
+			<img src="{{ playlist['owner']['images'][0]['url'] }}"
+				 class="img-thumbnail" alt="{{ playlist['owner']['title'] }}"
+				 style="float:left; max-width:60px; margin-right:40px;">
+		  </a>
+  		  {% endif %}
+		  <ul>
+			{% if playlist.get('owner', None) != None  and playlist['owner']['name'] != 'KKBOX' %}
+		 	<li>作者：<a href="{{ playlist['owner']['url'] }}"> {{playlist['owner']['name']}}</a></li>
+  			{% endif %}
+			<li><a href="{{playlist.get('url', '')}}">歌單原始連結</a></li>
+			<li><a herf="kkbox://play_playlist_{{playlist.get('id', '')}}">在 KKBOX 上播放</a></li>
+		  </ul>
+		  <br clear="all" />
+		  {{ playlist.get('description', '') | linebreaks }}
+
+		  <hr>
+
+		  {% for track in playlist.get('tracks', None) %}
+
+		  <div>
+			{%if track.get('album', {}).get('images', None) %}
+
+			<h3><a href="{{ track.get('url', '#') }}"> {{ track['name'] }} </a></h3>
+			<a href="{{ track.get('album', {}).get('url','#') }}">
+			  <img src="{{ track.get('album', {}).get('images', None)[0]['url'] }}"
+				   class="img-thumbnail" alt="Album Cover"
+				   style="float:left; max-width:60px; margin-right:40px;">
+			</a>
+			{% endif %}
+
+			<ul>
+			  <li>藝人/樂團：
+				<a href="{{ track.get('album', {}).get('artist',{}).get('url', '#') }}">
+				  {{ track.get('album', {}).get('artist',{}).get('name', 'N/A') }}
+				</a>
+			  </li>
+			  <li>專輯：
+				<a href="{{ track.get('album', {}).get('url','#') }}">
+				  {{ track.get('album', {}).get('name','N/A') }}
+				</a>
+			  </li>
+			  {% if track.get('youtube', None) != None %}
+			  <li>
+		  		<a href="https://www.youtube.com/watch?v={{ track['youtube']['id']['videoId'] }}">Youtube 連結</a>
+		  	  </li>
+		  	  {% endif %}
+			</ul>
+		  </div>
+
+		  <br clear="all" />
+
+		  {% if track.get('youtube', None) != None %}
+		  <iframe width="420" height="315" style="width: 100%"
+				  src="https://www.youtube.com/embed/{{ track['youtube']['id']['videoId'] }}" frameborder="0" allowfullscreen></iframe>
+		  {% endif %}
+
+ 		  {% endfor %}
+
+		  {% endif %}
+		</div>
+
+		<div id="menu" class="col-md-4">
+		  <h2>KKBOX 排行榜</h2>
+		  <ul>
+			{% for category in categories %}
+			<li><a href="/playlists/{{category['id']}}">{{category['title']}}</a></li>
+			{% endfor %}
+		  </ul>
+
+		  <h2>KKBOX 歌單</h2>
+		  <ul>
+			{% for category in playlist_categories %}
+			<li><a href="/category/{{category['id']}}">{{category['title']}}</a></li>
+			{% endfor %}
+		  </ul>
+		</div>
+	  </div>
+	</div>
+  </body>
+</html>

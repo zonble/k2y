@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{app.name}}{%if feature_playlists_info %} » {{feature_playlists_info['title']}} {% endif %}</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta property="og:title" content="{{app.name}}{%if feature_playlists_info %} » {{feature_playlists_info['title']}} {% endif %}" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:description" content="{{app.name}}" />
+	<style type="text/css">
+      body { line-height: 1.6em; }
+      #title { font-size: 250%; font-weight:bold; }
+      .header { font-size: 180%; }
+      .btn { font-size: 200%; }
+      #player {width: 100%; }
+	</style>
+  </head>
+  <body>
+	<div class="container">
+	  <div class="page-header">
+		<h1>
+		  <a href="/" title="{{app.name}}">{{app.name}}</a>
+		</h1>
+		<p>{{app.description}}</p>
+	  </div>
+
+	  <div class="row">
+		<div id="videos" class="col-md-8">
+		  {%if feature_playlists_info %}
+		  <h2>{{feature_playlists_info['title']}}</h2>
+
+		  <div style="padding:0; overflow: hidden;">
+			<div style="vertical-align:middle;">
+			  <img src="{{ feature_playlists_info.get('images', None)[0]['url'] }}"
+				   class="img-responsive" alt="category Cover"
+				   style="width: 100%; margin:0;">
+			</div>
+		  </div>
+
+		  {% else %}
+		  <h2>推薦歌單</h2>
+		  {% endif %}
+
+		  {% for feature_playlist in feature_playlists  %}
+		  <h3>
+		 	<a href="/playlists/{{feature_playlist['id']}}">
+		 	  {{ feature_playlist['title']}}
+		 	</a>
+		  </h3>
+		  <a href="{{ feature_playlist['owner']['url'] }}">
+			<img src="{{ feature_playlist['owner']['images'][0]['url'] }}"
+				 class="img-thumbnail" alt="{{ feature_playlist['owner']['title'] }}"
+				 style="float:left; max-width:60px; margin-right:40px;">
+		  </a>
+		  <ul>
+		 	<li>作者：<a href="{{ feature_playlist['owner']['url'] }}"> {{feature_playlist['owner']['name']}}</a></li>
+		 	<li><a href="{{feature_playlist['url']}}">歌單原始連結</a></li>
+		    <li><a herf="kkbox://play_playlist_{{feature_playlist.get('id', '')}}">在 KKBOX 上播放</a></li>
+		  </ul>
+
+		  <div class="container">
+			<div style="padding:0; overflow: hidden; border: 1px solid #CCC;"
+				 class="col-md-4">
+			  <div style="vertical-align:middle;">
+		 		<a href="/playlists/{{feature_playlist['id']}}">
+				  <img src="{{ feature_playlist.get('images', None)[0]['url'] }}"
+					   class="img-responsive" alt="Playlist Cover"
+					   style="width: 100%; margin:0;">
+				</a>
+			  </div>
+			</div>
+			<div class="col-md-4">
+			  <p>更新時間：{{ feature_playlist.get('updated_at', None) }}</p>
+			  {{ feature_playlist['description'] | linebreaks }}
+			</div>
+		  </div>
+
+		  <hr>
+		  {% endfor %}
+		</div>
+
+		<div id="menu" class="col-md-4">
+		  <h2>KKBOX 排行榜</h2>
+		  <ul>
+			{% for category in categories %}
+			<li><a href="/playlists/{{category['id']}}">{{category['title']}}</a></li>
+			{% endfor %}
+		  </ul>
+
+		  <h2>KKBOX 歌單</h2>
+		  <ul>
+			{% for category in playlist_categories %}
+			<li><a href="/category/{{category['id']}}">{{category['title']}}</a></li>
+			{% endfor %}
+		  </ul>
+
+		</div>
+	  </div>
+	</div>
+  </body>
+</html>
